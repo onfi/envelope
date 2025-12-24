@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A4封筒作成（宛先位置調整版）</title>
+    <style>
+        body {
+            font-family: 'Hiragino Mincho ProN', 'MS Mincho', serif;
+            background-color: #f4f7f9;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 入力UI */
+        .ui-container {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin: 15px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            line-height: 1.4;
+            resize: vertical;
+        }
+
+        .print-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        /* プレビュー */
+        .preview-container {
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+
+        @media print {
+            html, body {
+                height: 100%;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden; /* はみ出しをカット */
+            }
+            .ui-container { display: none !important; }
+            .preview-container {
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+        }
+        .a4-page {
+            /* 210mmだと稀に2枚目が出るため、209.8mmに微調整 */
+            height: 209.8mm !important; 
+            width: 297mm !important;
+            page-break-after: avoid; /* 次のページを作らせない */
+        }
+
+        svg { width: 100%; height: 100%; }
+    </style>
+</head>
+<body>
+
+<div class="ui-container">
+    <h3 style="margin-top:0;">封筒データ入力</h3>
+    
+    <div class="input-group">
+        <label>宛先</label>
+        <textarea id="rcptInput" rows="10"></textarea>
+    </div>
+
+    <div class="input-group">
+        <label>差出人</label>
+        <textarea id="sndrInput" rows="10"></textarea>
+    </div>
+
+    <button class="print-button" onclick="window.print()">印刷する</button>
+</div>
+
+<div class="preview-container">
+    <div class="a4-page">
+        <svg viewBox="0 0 297 210" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="21,106 72.5,203 266.5,101 215,4" fill="none" stroke="#333" stroke-width="0.2" />
+
+            <rect x="240" y="115" width="10" height="79" fill="none" stroke="#333" stroke-width="0.2" />
+            <rect x="4" y="196" width="61" height="8" fill="none" stroke="#333" stroke-width="0.2" />
+
+            <g transform="translate(143.5, 103) rotate(62.2)">
+                
+                <foreignObject x="-50" y="-95" width="100" height="100">
+                    <div id="rcptDisplay" xmlns="http://www.w3.org/1999/xhtml" 
+                         style="font-size: 1.8mm; line-height: 1.5; white-space: pre-wrap; font-family: serif; font-weight: bold; text-align: right; padding-right: 2mm;">
+                    </div>
+                </foreignObject>
+
+                <foreignObject x="-50" y="65" width="100" height="60">
+                    <div id="sndrDisplay" xmlns="http://www.w3.org/1999/xhtml" 
+                         style="font-size: 1.12mm; line-height: 1.2; white-space: pre-wrap; font-family: serif; text-align: right; padding-right: 2mm;">
+                    </div>
+                </foreignObject>
+                
+            </g>
+        </svg>
+    </div>
+</div>
+
+<script>
+    const rcptIn = document.getElementById('rcptInput');
+    const sndrIn = document.getElementById('sndrInput');
+    const rcptOut = document.getElementById('rcptDisplay');
+    const sndrOut = document.getElementById('sndrDisplay');
+
+    function update() {
+        rcptOut.textContent = rcptIn.value;
+        sndrOut.textContent = sndrIn.value;
+    }
+
+    rcptIn.addEventListener('input', update);
+    sndrIn.addEventListener('input', update);
+
+    // デフォルト値
+    rcptIn.value = "〒100-0001\n\n\n\n東京都千代田区千代田1-1\n\n日本 太郎 様";
+    sndrIn.value = "〒150-0002\n\n東京都渋谷区2-2\n日本 花子";
+    update();
+</script>
+
+</body>
+</html>
