@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A4封筒作成（宛先位置調整版）</title>
+    <title>A4封筒作成</title>
     <style>
         body {
             font-family: 'Hiragino Mincho ProN', 'MS Mincho', serif;
@@ -157,15 +157,38 @@
     function update() {
         rcptOut.textContent = rcptIn.value;
         sndrOut.textContent = sndrIn.value;
+        // localStorageに保存
+        localStorage.setItem('rcpt', rcptIn.value);
+        localStorage.setItem('cndr', sndrIn.value);
     }
 
     rcptIn.addEventListener('input', update);
     sndrIn.addEventListener('input', update);
 
-    // デフォルト値
-    rcptIn.value = "〒100-0001\n\n\n\n東京都千代田区千代田1-1\n\n日本 太郎 様";
-    sndrIn.value = "〒150-0002\n\n東京都渋谷区2-2\n日本 花子";
-    update();
+    // ページロード時にlocalStorageから復元
+    function loadFromLocalStorage() {
+        const savedRcpt = localStorage.getItem('rcpt');
+        const savedCndr = localStorage.getItem('cndr');
+        
+        if (savedRcpt !== null) {
+            rcptIn.value = savedRcpt;
+        } else {
+            // デフォルト値
+            rcptIn.value = "〒100-0001\n\n\n\n東京都千代田区千代田1-1\n\n日本 太郎 様";
+        }
+        
+        if (savedCndr !== null) {
+            sndrIn.value = savedCndr;
+        } else {
+            // デフォルト値
+            sndrIn.value = "〒150-0002\n\n東京都渋谷区2-2\n日本 花子";
+        }
+        
+        update();
+    }
+
+    // ページロード時に復元
+    loadFromLocalStorage();
 </script>
 
 </body>
